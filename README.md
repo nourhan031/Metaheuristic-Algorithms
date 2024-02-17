@@ -1,2 +1,2 @@
 # Metaheuristic-Algorithms
-My implementation of different metaheuristic algorithms for Computational Intelligence course
+My implementation of different metaheuristic algorithms

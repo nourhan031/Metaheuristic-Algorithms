@@ -80,7 +80,7 @@ def mutation(offspring, offspring_number, pMut=0.05):
     rand = random.random()
 
     # print mutation probability
-    print("Mutation probability for offspring " + str(offspring_number) + ":", rand)
+    # print("Mutation probability for offspring " + str(offspring_number) + ":", rand)
 
     # If rand < pMut, perform mutation
     if rand < pMut:

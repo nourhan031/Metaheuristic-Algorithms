@@ -15,7 +15,7 @@ def decode(binary, min, max):
 
     return min + (decimal / (2**len(binary) - 1)) * (max - min)
 
-# objective funtion
+# objective function
 def f(x1, x2):
     return 8 - (x1 + 0.0317)**2 + x2**2
 
@@ -91,12 +91,12 @@ def mutation(offspring, offspring_number, pMut=0.05):
         offspring[bit_index] = 1 - offspring[bit_index]
 
         # Print the mutation
-        print("Mutation occurred at bit", bit_index)
+        # print("Mutation occurred at bit", bit_index)
 
     return offspring
 
 pop = 10
-generations = 10
+generations = 100
 x_range = (-2, 2)
 y_range = (-2, 2)
 runs = 10

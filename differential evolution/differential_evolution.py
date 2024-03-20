@@ -1,0 +1,1 @@
+print("kossom 7ayaty")

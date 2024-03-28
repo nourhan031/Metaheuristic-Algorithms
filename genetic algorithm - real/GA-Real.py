@@ -103,6 +103,8 @@ runs = 10
 all_runs_avg_fitnesses_no_elitism = []
 all_runs_avg_fitnesses_elitism = []
 
+best_fitnesses = []
+
 for run in range(runs):
     # Reset the initial generation for each run
     generation = np.random.randint(2, size=(pop, 10))
@@ -123,6 +125,7 @@ for run in range(runs):
 
         rank_fitnesses = rank_fitness(fitnesses, sp=2) # selection pressure
         best_fitness = max(fitnesses)
+        best_fitnesses.append(best_fitness)
         avg_fitness = sum(fitnesses)/len(fitnesses)
         avg_fitnesses_no_elitism.append(avg_fitness)
         cumulative_fitness = np.cumsum(rank_fitnesses/rank_fitnesses.sum())
@@ -225,4 +228,13 @@ plt.xlabel('Run')
 plt.ylabel('Average Fitness')
 plt.legend()
 plt.title('Average Fitness per Run')
+plt.show()
+
+
+plt.figure()
+plt.plot(best_fitnesses, label='Best Fitness')
+plt.xlabel('Generation')
+plt.ylabel('Best Fitness')
+plt.legend()
+plt.title('Best Fitness over Generations')
 plt.show()

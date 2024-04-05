@@ -1,7 +1,8 @@
 import random
-
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+
 # a- calculate distance between citites
 def dist_bet_cities(cities):
     # cities: 2D array where each row represents a city and the 2 columns represent the x and y coordinates
@@ -48,7 +49,7 @@ def tour_length(dist):
         # add dist to the closest city to the tour length
          tour_length += dist[last_city][closest_city]
         # add the dist from the last city back to the start city
-         tour_length += dist[[tour][-1]][tour[0]]
+         tour_length += dist[tour[-1]][tour[0]]
         # return the tour and tour length
     return tour, tour_length
 
@@ -104,3 +105,26 @@ print(df_eta)
 print()
 
 # tour length
+tour, tour_length = tour_length(distance)
+
+def plot_tour(cities, tour):
+    # Create a new figure
+    plt.figure(figsize=(10, 10))
+    # Plot the cities as points
+    plt.scatter(cities[:, 0], cities[:, 1])
+    # Plot the tour
+    for i in range(len(tour) - 1):
+        # Get the coordinates of the current city and the next city
+        city1 = cities[tour[i]]
+        city2 = cities[tour[i + 1]]
+        # Plot a line between the current city and the next city
+        plt.plot([city1[0], city2[0]], [city1[1], city2[1]], 'r-')
+        # Plot a line from the last city back to the first city
+    city1 = cities[tour[-1]]
+    city2 = cities[tour[0]]
+    plt.plot([city1[0], city2[0]], [city1[1], city2[1]], 'r-')
+    # Show the plot
+    plt.show()
+
+# Plot the tour
+plot_tour(cities, tour)

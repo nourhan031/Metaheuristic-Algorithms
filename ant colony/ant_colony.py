@@ -93,6 +93,7 @@ cities = np.array([city[1:] for city in cities_data])
 # distance between cities
 distance = dist_bet_cities(cities)
 df_distance = pd.DataFrame(distance)
+print("distance matrix values: ")
 print(df_distance)
 
 print()
@@ -100,12 +101,14 @@ print()
 # eta
 eta = eta(distance)
 df_eta = pd.DataFrame(eta)
+print("eta matrix values: ")
 print(df_eta)
 
 print()
 
 # tour length
-tour, tour_length = tour_length(distance)
+n = len(cities)
+tour, Lnn = tour_length(distance)
 
 def plot_tour(cities, tour):
     # Create a new figure
@@ -128,3 +131,14 @@ def plot_tour(cities, tour):
 
 # Plot the tour
 plot_tour(cities, tour)
+
+# set the initial pheromone value
+tau = np.zeros((n,n))
+tau_0 = 1 / (n * Lnn)
+print("initial tau: ", tau_0)
+# Create an n*n matrix of pheromones and set each element to tau_0
+tau = np.full((n, n), tau_0)
+tau_data = np.array([tau])
+df_tau = pd.DataFrame(tau)
+print("tau matrix values: ")
+print(df_tau)

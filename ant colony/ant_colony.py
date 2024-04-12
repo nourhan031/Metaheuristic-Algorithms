@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# a- calculate distance between citites
+# a- calculate distance between cities
 def dist_bet_cities(cities):
     # cities: 2D array where each row represents a city and the 2 columns represent the x and y coordinates
     n = len(cities)
@@ -21,8 +21,11 @@ def dist_bet_cities(cities):
 
 # b- eta = reciprocal of distances
 def eta(dist):
-    eta = 1.0 / dist
-    eta[eta == np.inf] = np.nanmax(eta)
+    eta = np.zeros_like(dist)
+    mask = dist != 0
+    eta[mask] = 1.0 / dist[mask]
+    max_eta = np.nanmax(eta)
+    eta[~mask] = max_eta  # Assign maximum value to elements where division by zero occurred
     return eta
 
 
@@ -157,6 +160,28 @@ def choose_next_node(current_node, visited, pheromone, distances):
     next_node = np.random.choice(range(num_nodes), p=probabilities)
     return next_node
 
+
+def remove_cycles(tour, distance):
+    n = len(tour)
+    improvement = True
+    while improvement:
+        improvement = False
+        for i in range(1, n - 2):
+            for j in range(i + 1, n):
+                if j - i == 1:
+                    continue  # No need to reverse two adjacent edges
+                new_tour = tour[:i] + tour[i:j][::-1] + tour[j:]
+                new_length = sum(distance[new_tour[k - 1]][new_tour[k]] for k in range(1, n)) + distance[new_tour[-1]][new_tour[0]]
+                if new_length < sum(distance[tour[k - 1]][tour[k]] for k in range(1, n)) + distance[tour[-1]][tour[0]]:
+                    tour[:] = new_tour
+                    improvement = True
+                    break
+            if improvement:
+                break
+    return tour
+
+
+
 # While there are still cities to visit
 while len(visited) < num_nodes:
     # Apply the state transition rule to find the next city to visit
@@ -165,13 +190,24 @@ while len(visited) < num_nodes:
     visited.append(current_node)
 
     # After constructing the tour, update pheromone matrix
-    for i in range(num_nodes):
-        for j in range(num_nodes):
-            tau[i][j] *= evaporation_rate
-            if j in visited:
-                tau[i][j] += (1.0 / tour_length)
+    for ant in range(m):  # Iterate over all ants
+        # Compute the length of the tour for the current ant
+        tour, tour_len = tour_length(distance)
+        # remove cycles from tour
+        tour = remove_cycles(tour, distance)
+        # Update pheromone for edges traversed by the ant
+        for i in range(num_nodes - 1):
+            tau[tour[i]][tour[i + 1]] += 1.0 / tour_len
+        # Update pheromone for the last edge connecting the last and first cities
+        tau[tour[-1]][tour[0]] += 1.0 / tour_len
+
+        # Apply evaporation
+        tau *= (1 - evaporation_rate)
+
+
 
 # Print the visited cities
+print("visited cities")
 print(visited)
 
 

@@ -91,45 +91,45 @@ cities_data = np.array([
 ])
 # Convert the list of tuples to a NumPy array
 cities = np.array([city[1:] for city in cities_data])
+# print(cities[1])
+
 
 # TESTING
-
 # distance between cities
 distance = dist_bet_cities(cities)
 df_distance = pd.DataFrame(distance)
-print("distance matrix values: ")
-print(df_distance)
-
-print()
+# print("distance matrix values: ")
+# print(df_distance)
+#
+# print()
 
 # eta
 eta = eta(distance)
 df_eta = pd.DataFrame(eta)
-print("eta matrix values: ")
-print(df_eta)
-
-print()
+# print("eta matrix values: ")
+# print(df_eta)
+#
+# print()
 
 # tour length
 n = len(cities)
 tour, Lnn = tour_length(distance)
 
-
-
 # set the initial pheromone value
 tau = np.zeros((n,n))
 tau_0 = 1 / (n * Lnn)
-print("initial tau: ", tau_0)
+# print("initial tau: ", tau_0)
+
 # Create an n*n matrix of pheromones and set each element to tau_0
 tau = np.full((n, n), tau_0)
 tau_data = np.array([tau])
 df_tau = pd.DataFrame(tau)
-print("tau matrix values: ")
-print(df_tau)
+# print("tau matrix values: ")
+# print(df_tau)
 
 
 # Number of ants
-m = len(cities)
+m = 50
 # Generate m ants and place them over the cities
 ants = np.random.permutation(m)
 
@@ -138,29 +138,30 @@ evaporation_rate = 0.5
 # Alpha parameter for the relative importance of pheromone
 alpha = 1.0
 # Beta parameter for the relative importance distance
-beta = 2.0
+beta = 1.5
 # Number of cities
 num_nodes = len(cities)
 
-# Initialize the visited cities and the current city
-visited = [0]
-current_node = 0
-
+# POINT 2
 def choose_next_node(current_node, visited, pheromone, distances):
     probabilities = []
     for i in range(num_nodes):
         if i not in visited:
             # Probability calculation using pheromone and distance
             prob = (pheromone[current_node][i] ** alpha) * ((1.0 / distances[current_node][i]) ** beta)
-            probabilities.append(prob)
         else:
-            probabilities.append(0)
+            prob = 0  # Set probability to 0 for visited nodes
+        probabilities.append(prob)
+
     # Normalize probabilities to sum to 1
     probabilities = probabilities / np.sum(probabilities)
+    # Choose the next node based on the probabilities
     next_node = np.random.choice(range(num_nodes), p=probabilities)
+
     return next_node
 
 
+# POINT 3
 def remove_cycles(tour, distance):
     n = len(tour)
     improvement = True
@@ -182,64 +183,43 @@ def remove_cycles(tour, distance):
 
 
 
-# While there are still cities to visit
-while len(visited) < num_nodes:
-    # Apply the state transition rule to find the next city to visit
-    current_node = choose_next_node(current_node, visited, tau, distance)
-    # Add the next city to the visited cities
-    visited.append(current_node)
+num_runs = 20
+results = []
 
-    # After constructing the tour, update pheromone matrix
-    for ant in range(m):  # Iterate over all ants
-        # Compute the length of the tour for the current ant
-        tour, tour_len = tour_length(distance)
-        # remove cycles from tour
+for run in range(num_runs):
+    # Reset pheromone matrix for each run
+    tau = np.full((num_nodes, num_nodes), tau_0)
+
+    # Initialize the visited cities and the current city for each ant
+    for ant in range(m):
+        visited = [ant % num_nodes] # ensure that it doesn't access an index outside the valid range of num_nodes
+        current_node = ant % num_nodes
+
+        while len(visited) < num_nodes:
+            # Apply the state transition rule to find the next city to visit for each ant
+            current_node = choose_next_node(current_node, visited, tau, distance)
+            visited.append(current_node)
+
+        # After constructing the tour, remove cycles from tour
+        tour = visited.copy()
         tour = remove_cycles(tour, distance)
+
         # Update pheromone for edges traversed by the ant
         for i in range(num_nodes - 1):
-            tau[tour[i]][tour[i + 1]] += 1.0 / tour_len
-        # Update pheromone for the last edge connecting the last and first cities
-        tau[tour[-1]][tour[0]] += 1.0 / tour_len
+            tau[tour[i]][tour[i + 1]] += 1.0 / Lnn
+        tau[tour[-1]][tour[0]] += 1.0 / Lnn
 
         # Apply evaporation
         tau *= (1 - evaporation_rate)
 
+    # Store the tour constructed in this run
+    results.append(tour)
+
+    print(f"Run {run + 1}: Tour length = {sum(distance[tour[i - 1]][tour[i]] for i in range(1, len(tour))) + distance[tour[-1]][tour[0]]}")
+
+# Print all the tours
+print("\nAll Tours:")
+for i, tour in enumerate(results):
+    print(f"Run {i + 1}: {tour}")
 
 
-# Print the visited cities
-print("visited cities")
-print(visited)
-
-
-def plot_tour(cities, tour):
-    # Create a new figure
-    plt.figure(figsize=(10, 10))
-    # Plot the cities as points
-    plt.scatter(cities[:, 0], cities[:, 1])
-    # Plot the tour
-    for i in range(len(tour) - 1):
-        # Get the coordinates of the current city and the next city
-        city1 = cities[tour[i]]
-        city2 = cities[tour[i + 1]]
-        # Plot a line between the current city and the next city
-        plt.plot([city1[0], city2[0]], [city1[1], city2[1]], 'r-')
-        # Plot a line from the last city back to the first city
-    city1 = cities[tour[-1]]
-    city2 = cities[tour[0]]
-    plt.plot([city1[0], city2[0]], [city1[1], city2[1]], 'r-')
-    # Show the plot
-    plt.show()
-
-# Plot the tour
-plot_tour(cities, tour)
-#
-# # set the initial pheromone value
-# tau = np.zeros((n,n))
-# tau_0 = 1 / (n * Lnn)
-# print("initial tau: ", tau_0)
-# # Create an n*n matrix of pheromones and set each element to tau_0
-# tau = np.full((n, n), tau_0)
-# tau_data = np.array([tau])
-# df_tau = pd.DataFrame(tau)
-# print("tau matrix values: ")
-# print(df_tau)

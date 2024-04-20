@@ -1,2 +1,2 @@
 # Metaheuristic-Algorithms
-My implementation of different metaheuristic algorithms
+My implementation of different metaheuristic algorithms 

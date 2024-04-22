@@ -1,1 +1,0 @@
-print("kossom 7ayaty :D")

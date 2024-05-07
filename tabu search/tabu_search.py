@@ -1,5 +1,6 @@
 import pandas as pd
 import random
+import matplotlib.pyplot as plt
 
 def input_data(Path):
     '''Takes the path of the excel file of the instances.
@@ -30,4 +31,21 @@ def objective_fun(instance_dict, sol, show = False):
 
     for i in sol:
         C_i = start_time + dict[i]["processing_time"]  # Completion time
+        T_i = max(C_i - dict[i]["due_date"], 0)  # tardiness is the max of completion time of i minus due date of i and 0 -> if completion<due therefore tardiness=0(no delay)
+        obj_fun += dict[i]["weight"] * T_i  # obj func is the sum of the product of the weight and the tardiness for each job
+        start_time = C_i  # start time for the next job is to be the completion time of the current job
 
+
+def visualize_solution(instance_dict, sol):
+    '''Visualize the start and completion times of each job in the solution'''
+    start_time = 0
+    for i in sol:
+        plt.barh(i, dict[i]["processing_time"], left=start_time, color='blue')
+        start_time += dict[i]["processing_time"]
+
+    plt.xlabel('Time')
+    plt.ylabel('Jobs')
+    plt.title('Job Schedule')
+    plt.show()
+
+visualize_solution(instance_dict=input_data('Instance_30.xlsx'), )

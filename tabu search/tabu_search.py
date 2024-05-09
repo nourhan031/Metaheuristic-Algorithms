@@ -3,9 +3,10 @@ import random
 import matplotlib.pyplot as plt
 
 def input_data(Path):
-    '''Takes the path of the excel file of the instances.
+    """
+    Takes the path of the Excel file of the instances.
     Returns a dict of jobs number as Key and weight, processing time (hours) and due date (hours) as values.
-    '''
+    """
     return pd.read_excel(Path, names=['Job', 'weight', "processing_time", "due_date"],
                          index_col=0).to_dict('index')
 

@@ -2,38 +2,39 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Your functions and gradient descent algorithm
-def f(x):
-    return x**2
+def f(x, y):
+    return x**2 + y**2
 
-def df(x):
-    return 2*x
+def df_dx(x, y):
+    return 2 * x
 
-def gradient_descent(f, df, init_pt, learning_rate=0.1, num_iter=1000):
-    x = init_pt
-    history = [x]  # to store all points
-    for _ in range(num_iter):
-        x_prev = x
-        grad = df(x_prev)
-        x = x_prev - learning_rate * grad
-        history.append(x)
-    return x, history
+def df_dy(x, y):
+    return 2 * y
 
-# Run gradient descent and get history
-init_pt = 5
-final_pt, history = gradient_descent(f, df, init_pt)
 
-# Generate x values and corresponding y values
-x_values = np.linspace(-init_pt, init_pt, 400)
-y_values = f(x_values)
+def gradient_descent(start_x, start_y, learning_rate, num_iterations):
+    x = start_x
+    y = start_y
 
-# Create the plot
-plt.figure(figsize=(10, 6))
-# plt.plot(x_values, y_values, label='f(x) = x^2')
-plt.plot(x_values, y_values, label='f(x) = sin(x)')
-plt.scatter(history, [f(x) for x in history], color='red', zorder=5)
-plt.plot(history, [f(x) for x in history], linestyle='dashed', color='red', zorder=5)
-plt.xlabel('x')
-plt.ylabel('f(x)')
-plt.legend()
-plt.grid(True)
-plt.show()
+    for i in range(num_iterations):
+        # Calculate the gradients
+        grad_x = df_dx(x, y)
+        grad_y = df_dy(x, y)
+
+        # Update the parameters
+        x = x - learning_rate * grad_x
+        y = y - learning_rate * grad_y
+
+    return x, y, f(x, y)
+
+start_x, start_y = 8, 8
+learning_rate = 0.1
+num_iterations = 20
+x_opt, y_opt, f_opt = gradient_descent(start_x, start_y, learning_rate, num_iterations)
+
+print("Optimal Solution:")
+print("x =", x_opt)
+print("y =", y_opt)
+
+print("Optimal Value of the Function:")
+print("f(x, y) =", f_opt)

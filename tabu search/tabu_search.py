@@ -37,16 +37,16 @@ def objective_fun(instance_dict, sol, show = False):
         start_time = C_i  # start time for the next job is to be the completion time of the current job
 
 
-def visualize_solution(instance_dict, sol):
-    '''Visualize the start and completion times of each job in the solution'''
-    start_time = 0
-    for i in sol:
-        plt.barh(i, dict[i]["processing_time"], left=start_time, color='blue')
-        start_time += dict[i]["processing_time"]
-
-    plt.xlabel('Time')
-    plt.ylabel('Jobs')
-    plt.title('Job Schedule')
-    plt.show()
-
-visualize_solution(instance_dict=input_data('Instance_30.xlsx'), )
+# def visualize_solution(instance_dict, sol):
+#     '''Visualize the start and completion times of each job in the solution'''
+#     start_time = 0
+#     for i in sol:
+#         plt.barh(i, dict[i]["processing_time"], left=start_time, color='blue')
+#         start_time += dict[i]["processing_time"]
+#
+#     plt.xlabel('Time')
+#     plt.ylabel('Jobs')
+#     plt.title('Job Schedule')
+#     plt.show()
+#
+# visualize_solution(instance_dict=input_data('Instance_30.xlsx'), )
